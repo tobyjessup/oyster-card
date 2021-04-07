@@ -40,4 +40,26 @@ describe Oystercard do
       expect(subject.deduct(sum)).to eq(default_balance - sum)
     end
   end
+
+  describe '#in_journey?' do 
+    it { expect(subject).to respond_to(:in_journey?) }
+    it { expect(subject).not_to be_in_journey }
+  end
+  
+  describe '#touch_in' do
+    it { expect(subject).to respond_to(:touch_in) }
+    it 'changes in_journey to true' do
+      subject.touch_in
+      expect(subject).to be_in_journey
+    end
+  end
+
+  describe '#touch_out' do
+    it { expect(subject).to respond_to(:touch_out) }
+    it 'changes in_journey back to false' do
+      subject.touch_in
+      subject.touch_out
+      expect(subject).not_to be_in_journey
+    end
+  end
 end
