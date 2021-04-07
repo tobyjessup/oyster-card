@@ -7,6 +7,7 @@ describe Oystercard do
   let (:min_balance) { Oystercard::MIN_BALANCE }
   let (:topped_up_card) { Oystercard.new(min_balance) }
   let (:station) { double("station") }
+  let (:exit_station) { double('exit station') }
 
   describe '#balance' do
     it 'responds' do
@@ -35,15 +36,6 @@ describe Oystercard do
     end
   end
 
-  # describe '#deduct' do
-  #   it { expect(subject).to respond_to(:deduct).with(1).argument }
-
-  #   it 'reduces balance' do
-  #     sum = 30
-  #     expect(subject.deduct(sum)).to eq(default_balance - sum)
-  #   end
-  # end
-
   describe '#in_journey?' do 
     it { expect(subject).to respond_to(:in_journey?) }
     it { expect(subject).not_to be_in_journey }
@@ -64,20 +56,23 @@ describe Oystercard do
   end
 
   describe '#touch_out' do
-    it { expect(subject).to respond_to(:touch_out) }
+    it { expect(subject).to respond_to(:touch_out).with(1).argument }
+
     it 'changes in_journey back to false' do
       topped_up_card.touch_in(station)
-      topped_up_card.touch_out
+      topped_up_card.touch_out(station)
       expect(topped_up_card).not_to be_in_journey
     end
+    
     it 'deducts fair when touch_out' do
       topped_up_card.touch_in(station)
-      expect{ topped_up_card.touch_out }.to change{ topped_up_card.balance }.by(-min_balance)
+      expect{ topped_up_card.touch_out(station) }.to change{ topped_up_card.balance }.by(-min_balance)
     end
   end
 
   describe '#entry_station' do
     it { expect(subject.entry_station).to be_nil }
+
     it 'accepts station' do
       topped_up_card.touch_in(station)
       expect(topped_up_card.entry_station).to eq(station)
@@ -85,8 +80,24 @@ describe Oystercard do
 
     it 'resets @entry_station' do
       topped_up_card.touch_in(station)
-      topped_up_card.touch_out
+      topped_up_card.touch_out(exit_station)
       expect(topped_up_card.entry_station).to be_nil
+    end
+  end
+
+  describe '#journey' do
+  it 'is empty by default' do
+    expect(topped_up_card.journeys).to eq([])
+  end
+
+  it 'stores one journey' do
+      topped_up_card.touch_in(station)
+      topped_up_card.touch_out(exit_station)
+      expected_journey = {
+        entry_station: station,
+        exit_station: exit_station
+      }
+      expect(topped_up_card.journeys[-1]).to eq(expected_journey)
     end
   end
 end
