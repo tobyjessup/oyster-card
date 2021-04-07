@@ -17,10 +17,6 @@ class Oystercard
 
     @balance += sum
   end
-
-  def deduct(sum)
-    @balance -= sum
-  end
   
   def in_journey?
     @in_journey
@@ -33,6 +29,7 @@ class Oystercard
   end
 
   def touch_out
+    deduct(min_balance)
     @in_journey = false
   end
 
@@ -44,5 +41,9 @@ class Oystercard
 
   def minimum_balance?
     @balance >= @min_balance
+  end
+
+  def deduct(sum)
+    @balance -= sum
   end
 end

@@ -34,14 +34,14 @@ describe Oystercard do
     end
   end
 
-  describe '#deduct' do
-    it { expect(subject).to respond_to(:deduct).with(1).argument }
+  # describe '#deduct' do
+  #   it { expect(subject).to respond_to(:deduct).with(1).argument }
 
-    it 'reduces balance' do
-      sum = 30
-      expect(subject.deduct(sum)).to eq(default_balance - sum)
-    end
-  end
+  #   it 'reduces balance' do
+  #     sum = 30
+  #     expect(subject.deduct(sum)).to eq(default_balance - sum)
+  #   end
+  # end
 
   describe '#in_journey?' do 
     it { expect(subject).to respond_to(:in_journey?) }
@@ -57,8 +57,8 @@ describe Oystercard do
     end
 
     it 'raises error is minimum balance is too low' do
-      subject.deduct(default_balance)
-      expect { subject.touch_in }.to raise_error('Not enough funds!')
+      zero_balance_card = Oystercard.new(0)
+      expect { zero_balance_card.touch_in }.to raise_error('Not enough funds!')
     end
   end
 
@@ -68,6 +68,10 @@ describe Oystercard do
       topped_up_card.touch_in
       topped_up_card.touch_out
       expect(topped_up_card).not_to be_in_journey
+    end
+    it 'deducts fair when touch_out' do
+      topped_up_card.touch_in
+      expect{ topped_up_card.touch_out }.to change{ topped_up_card.balance }.by(-min_balance)
     end
   end
 end
