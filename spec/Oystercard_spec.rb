@@ -4,7 +4,9 @@ describe Oystercard do
 
   let (:default_balance) { Oystercard::DEFAULT_BALANCE }
   let (:max_balance) { Oystercard::MAX_BALANCE }
-  # let (:test_plane) { Plane.new }
+  let (:min_balance) { Oystercard::MIN_BALANCE }
+  let (:topped_up_card) { Oystercard.new(min_balance) }
+
   describe '#balance' do
     it 'responds' do
       expect(subject).to respond_to(:balance)
@@ -47,19 +49,25 @@ describe Oystercard do
   end
   
   describe '#touch_in' do
-    it { expect(subject).to respond_to(:touch_in) }
+    it { expect(topped_up_card).to respond_to(:touch_in) }
+    
     it 'changes in_journey to true' do
-      subject.touch_in
-      expect(subject).to be_in_journey
+      topped_up_card.touch_in
+      expect(topped_up_card).to be_in_journey
+    end
+
+    it 'raises error is minimum balance is too low' do
+      subject.deduct(default_balance)
+      expect { subject.touch_in }.to raise_error('Not enough funds!')
     end
   end
 
   describe '#touch_out' do
     it { expect(subject).to respond_to(:touch_out) }
     it 'changes in_journey back to false' do
-      subject.touch_in
-      subject.touch_out
-      expect(subject).not_to be_in_journey
+      topped_up_card.touch_in
+      topped_up_card.touch_out
+      expect(topped_up_card).not_to be_in_journey
     end
   end
 end
