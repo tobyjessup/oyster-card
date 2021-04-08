@@ -43,9 +43,13 @@ describe Oystercard do
   
   describe '#touch_in' do
     it { expect(topped_up_card).to respond_to(:touch_in).with(1).argument }
+    # before do replaces the need for the repeated statements throughout
+    before do
+      topped_up_card.touch_in(station)
+    end
     
     it 'changes in_journey to true' do
-      topped_up_card.touch_in(station)
+      # topped_up_card.touch_in(station)
       expect(topped_up_card).to be_in_journey
     end
 
@@ -100,4 +104,5 @@ describe Oystercard do
       expect(topped_up_card.journeys[-1]).to eq(expected_journey)
     end
   end
+
 end
